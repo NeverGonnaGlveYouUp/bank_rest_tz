@@ -1,8 +1,47 @@
-#
-# application.yml — главный конфигурационный файл Spring Boot.
+spring:
+  # Настройки подключения к БД (PostgreSQL)
+  datasource:
+    hikari:
+      pool-name: PostgresHikari
+      maximum-pool-size: 10
+      minimum-idle: 1
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+    url: jdbc:postgresql://${POSTGRES_HOST}:5432/${POSTGRES_DB}
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+    physicalNamingStrategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
 
-Что нужно сделать:
-  - Указать настройки подключения к базе данных.
-  - Указать порт приложения.
-  - Настроить параметры безопасности и JWT.
-  - Включить Swagger UI.
+  # JPA / Hibernate
+  jpa:
+    open-in-view: false
+    show-sql: false
+    defer-datasource-initialization: false
+    hibernate:
+      ddl-auto: create
+
+  # Настройки миграций Liquibase
+  liquibase:
+    change-log: classpath:/db/migration/db.changelog-master.xml
+    drop-first: false
+    show-summary: summary
+    default-schema: public
+    enabled: false
+
+# Параметры безопасности и JWT
+application:
+  security:
+    jwt:
+      secret-key: ${JWT_SECRET} # 256-bit key
+      expiration: 86400000 # 1 день в мс
+
+# Настройка Swagger
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: alpha
+    tags-sorter: alpha
