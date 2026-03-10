@@ -9,10 +9,9 @@ import com.example.bankcards.repository.RoleRepository;
 import com.example.bankcards.repository.UserRepository;
 import com.example.bankcards.security.JwtService;
 import com.example.bankcards.validators.AuthDetailsValidator;
-import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -26,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
@@ -41,6 +41,8 @@ public class AuthController {
     @PostMapping("/auth/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
 
+        log.info("User login attempt: {}", request.getUsername());
+
         Errors errors = new BeanPropertyBindingResult(request, "request");
         authDetailsValidator.validate(request, errors);
         if (errors.hasErrors()) return ResponseEntity.badRequest().body(errors.getAllErrors());
@@ -51,11 +53,15 @@ public class AuthController {
                         request.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtService.generateToken((UserDetails) authentication.getPrincipal());
+
+        log.info("User {} has been successfully logged in.", request.getUsername());
         return ResponseEntity.ok(new JwtResponse(jwt));
     }
 
     @PostMapping("/auth/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
+
+        log.info("Starting registration of a new user: {}", request.getUsername());
 
         Errors errors = new BeanPropertyBindingResult(request, "request");
         authDetailsValidator.validate(request, errors);
@@ -76,23 +82,8 @@ public class AuthController {
 
         userRepository.save(user);
 
+        log.info("User {} successfully created with roles: {}", user.getUsername(), request.getRoles());
         return ResponseEntity.ok("Пользователь успешно зарегистрировался!");
     }
-
-    @GetMapping("/protected/admin")
-    @Operation(summary = "Доступен только авторизованным пользователям с ролью ADMIN")
-    @PreAuthorize("hasRole('ADMIN')")
-    public String exampleAdmin() {
-        return "Hello, admin!";
-    }
-
-
-    @GetMapping("/protected/user")
-    @Operation(summary = "Доступен только авторизованным пользователям с ролью USER")
-    @PreAuthorize("hasRole('USER')")
-    public String exampleUser() {
-        return "Hello, user!";
-    }
-
 
 }

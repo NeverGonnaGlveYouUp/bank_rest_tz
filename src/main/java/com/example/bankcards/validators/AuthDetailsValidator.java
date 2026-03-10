@@ -4,7 +4,7 @@ import com.example.bankcards.dto.LoginRequest;
 import com.example.bankcards.dto.RegisterRequest;
 import com.example.bankcards.repository.RoleRepository;
 import com.example.bankcards.repository.UserRepository;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
@@ -14,7 +14,7 @@ import java.text.MessageFormat;
 import java.util.List;
 
 @Component
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class AuthDetailsValidator implements Validator {
 
     private final static Integer minLoginLength = 8;

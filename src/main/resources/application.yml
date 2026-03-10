@@ -22,13 +22,17 @@ spring:
     hibernate:
       ddl-auto: create
 
-  # Настройки миграций Liquibase
   liquibase:
     change-log: classpath:/db/migration/db.changelog-master.xml
     drop-first: false
     show-summary: summary
     default-schema: public
     enabled: false
+
+  org:
+    hibernate:
+      envers:
+        strategy: ValidityAuditStrategy
 
 # Параметры безопасности и JWT
 application:
@@ -45,3 +49,8 @@ springdoc:
     path: /swagger-ui.html
     operations-sorter: alpha
     tags-sorter: alpha
+
+bin: ${CARD_BIN} # Bin карты, первые n чисел номера карты
+db:
+  encryption:
+    key: ${BD_SECRET} # Ключ для шифрования полей в бд
