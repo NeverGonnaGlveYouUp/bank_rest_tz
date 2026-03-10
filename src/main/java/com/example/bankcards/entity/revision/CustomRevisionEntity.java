@@ -16,28 +16,34 @@ import java.util.Objects;
 @Entity
 @RevisionEntity(CardRevisionListener.class)
 @Table(name = "REVINFO")
-public class CardRevision {
+public class CustomRevisionEntity {
 
     @Id
     @RevisionNumber
-    @GeneratedValue(generator = "CardAuditRevisionSeq")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "CardAuditRevisionSeq")
     @SequenceGenerator(name = "CardAuditRevisionSeq", sequenceName = "card_audit_revision_seq", allocationSize = 1)
-    private int id;
+    private long id;
 
     @RevisionTimestamp
+    @Column(name = "timestamp")
     private long timestamp;
 
+    @Column(name = "username")
     private String username;
 
     @Override
     public boolean equals(Object o) {
+        if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        CardRevision revision = (CardRevision) o;
-        return getId() == revision.getId() && getTimestamp() == revision.getTimestamp() && Objects.equals(getUsername(), revision.getUsername());
+        CustomRevisionEntity that = (CustomRevisionEntity) o;
+        return id == that.id &&
+                timestamp == that.timestamp &&
+                Objects.equals(username, that.username);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getTimestamp(), getUsername());
+        return Objects.hash(id, timestamp, username);
     }
+
 }

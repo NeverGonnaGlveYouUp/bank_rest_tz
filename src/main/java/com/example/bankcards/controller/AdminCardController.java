@@ -2,6 +2,7 @@ package com.example.bankcards.controller;
 
 import com.example.bankcards.dto.CardDto;
 import com.example.bankcards.dto.CreateCardDto;
+import com.example.bankcards.dto.UpdateCardRequest;
 import com.example.bankcards.service.AdminCardService;
 import com.example.bankcards.util.ObjectToRsqlConverter;
 import com.example.bankcards.validators.CardValidator;
@@ -58,14 +59,35 @@ public class AdminCardController {
     public ResponseEntity<?> findAllByRsql(
             @RequestParam(value = "search", required = false) String search,
             @RequestParam(value = "sort", required = false) String sort,
-            @RequestParam(value = "page", required = false, defaultValue = "0" ) Integer page,
-            @RequestParam(value = "size", required = false, defaultValue = "10") Integer size
+            @RequestParam(value = "page", defaultValue = "0") Integer page,
+            @RequestParam(value = "size", defaultValue = "10") Integer size
     ) {
         String adminUsername = SecurityContextHolder.getContext().getAuthentication().getName();
         log.info("findAllByRsql: user: {} search:{}, sort:{}, page:{}, size:{}",
                 adminUsername, search, sort, page, size);
         search = UriUtils.decode(search, StandardCharsets.UTF_8);
         return ResponseEntity.ok(adminCardService.findAllByRsql(search, sort, page, size));
+    }
+
+    /**
+     * Изменение параметров карты (имя, любой статус).
+     */
+    @PatchMapping("/{id}")
+    public ResponseEntity<CardDto> updateCard(
+            @PathVariable Long id,
+            @RequestBody UpdateCardRequest request) {
+
+        CardDto updatedCard = adminCardService.updateCard(id, request);
+        return ResponseEntity.ok(updatedCard);
+    }
+
+    /**
+     * Подтверждение отката перевода (изменение балансов).
+     */
+    @PostMapping("/transfers/{id}/rollback")
+    public ResponseEntity<String> rollbackTransfer(@PathVariable Long id) {
+        adminCardService.rollbackTransfer(id);
+        return ResponseEntity.ok("Перевод успешно отменен, балансы восстановлены.");
     }
 
 }

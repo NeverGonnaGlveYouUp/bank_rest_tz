@@ -1,15 +1,22 @@
 package com.example.bankcards.service.revisionListener;
 
-import com.example.bankcards.entity.revision.CardRevision;
+import com.example.bankcards.entity.revision.CustomRevisionEntity;
 import org.hibernate.envers.RevisionListener;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 public class CardRevisionListener implements RevisionListener {
 
     @Override
     public void newRevision(Object revisionEntity) {
-        CardRevision revision = (CardRevision) revisionEntity;
+        CustomRevisionEntity rev = (CustomRevisionEntity) revisionEntity;
 
-        revision.setUsername(SecurityContextHolder.getContext().getAuthentication().getName());
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        if (auth != null && auth.isAuthenticated()) {
+            rev.setUsername(auth.getName());
+        } else {
+            rev.setUsername("SYSTEM");
+        }
     }
 }

@@ -34,6 +34,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/user/**").authenticated()
                         .requestMatchers("/api/admin/**").authenticated()
+                        .requestMatchers("/api/cards-history/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

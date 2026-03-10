@@ -49,4 +49,9 @@ public class CardValidator implements Validator {
             }
         }
     }
+
+    public static Errors accessDeniedException(Errors errors, String message) {
+        errors.reject("access.denied", message != null ? message : "Доступ запрещен");
+        return errors;
+    }
 }
