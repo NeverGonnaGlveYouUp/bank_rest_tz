@@ -4,11 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import com.example.bankcards.dto.BalanceHistoryDto;
-import com.example.bankcards.entity.User;
-import com.example.bankcards.service.CardAccountAuditService;
+import com.example.bankcards.service.CardAuditService;
 
 @RestController
 @RequestMapping("/api/cards-history")
@@ -16,7 +14,7 @@ import com.example.bankcards.service.CardAccountAuditService;
 @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
 public class CardHistoryController {
 
-    private final CardAccountAuditService auditService;
+    private final CardAuditService auditService;
 
     /**
      * Получение истории баланса карты.

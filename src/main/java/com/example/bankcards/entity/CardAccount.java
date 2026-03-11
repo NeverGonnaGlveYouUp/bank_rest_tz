@@ -3,15 +3,12 @@ package com.example.bankcards.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.envers.AuditJoinTable;
-import org.hibernate.envers.Audited;
 
 import java.math.BigDecimal;
 import java.util.Objects;
 
 @Getter
 @Setter
-@Audited
 @Entity
 @Table(name = "card_account")
 public class CardAccount {
@@ -19,7 +16,6 @@ public class CardAccount {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @AuditJoinTable
     @OneToOne(mappedBy = "cardAccount")
     private Card card;
 

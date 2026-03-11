@@ -10,11 +10,10 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.envers.AuditJoinTable;
 import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.lang.reflect.Field;
 import java.time.LocalDate;
-import java.util.StringJoiner;
 
 @Slf4j
 @Getter
@@ -36,8 +35,8 @@ public class Card {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @AuditJoinTable
-    @OneToOne(cascade = CascadeType.ALL)
+    @NotAudited
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "card_acciount_id", referencedColumnName = "id")
     private CardAccount cardAccount;
 

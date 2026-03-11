@@ -27,12 +27,7 @@ spring:
     drop-first: false
     show-summary: summary
     default-schema: public
-    enabled: false
-
-  org:
-    hibernate:
-      envers:
-        strategy: ValidityAuditStrategy
+    enabled: true
 
 # Параметры безопасности и JWT
 application:

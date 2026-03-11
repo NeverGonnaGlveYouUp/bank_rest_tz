@@ -15,7 +15,7 @@ import java.nio.charset.StandardCharsets;
 @Slf4j
 @RestController
 @PreAuthorize("hasRole('USER')")
-@RequestMapping("/api/protected/user")
+@RequestMapping("/api/user")
 @RequiredArgsConstructor
 public class UserCardController {
 
@@ -31,7 +31,7 @@ public class UserCardController {
         String adminUsername = SecurityContextHolder.getContext().getAuthentication().getName();
         log.info("findAllByRsql: user: {} search:{}, sort:{}, page:{}, size:{}",
                 adminUsername, search, sort, page, size);
-        search = UriUtils.decode(search, StandardCharsets.UTF_8);
+        if (search != null) search = UriUtils.decode(search, StandardCharsets.UTF_8);
         return ResponseEntity.ok(userCardService.findAllByRsql(search, sort, page, size));
     }
 

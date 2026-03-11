@@ -2,7 +2,7 @@ package com.example.bankcards.service;
 
 import com.example.bankcards.dto.BalanceHistoryDto;
 import com.example.bankcards.entity.Card;
-import com.example.bankcards.entity.CardAccount;
+import com.example.bankcards.entity.Transfer;
 import com.example.bankcards.entity.revision.CustomRevisionEntity;
 import com.example.bankcards.repository.CardRepository;
 import jakarta.persistence.EntityManager;
@@ -29,7 +29,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class CardAccountAuditService {
+public class CardAuditService {
 
     private final EntityManager entityManager;
     private final CardRepository cardRepository;
@@ -51,14 +51,20 @@ public class CardAccountAuditService {
         AuditReader auditReader = AuditReaderFactory.get(entityManager);
 
         Long totalCount = (Long) auditReader.createQuery()
-                .forRevisionsOfEntity(CardAccount.class, false, true)
-                .add(AuditEntity.id().eq(accountId))
+                .forRevisionsOfEntity(Transfer.class, false, true)
+                .add(AuditEntity.or(
+                        AuditEntity.relatedId("fromAccount").eq(accountId),
+                        AuditEntity.relatedId("toAccount").eq(accountId)
+                ))
                 .addProjection(AuditEntity.revisionNumber().count())
                 .getSingleResult();
 
-        List<Object[]> results =  auditReader.createQuery()
-                .forRevisionsOfEntity(CardAccount.class, false, true)
-                .add(AuditEntity.id().eq(accountId))
+        List<Object[]> results = auditReader.createQuery()
+                .forRevisionsOfEntity(Transfer.class, false, true)
+                .add(AuditEntity.or(
+                        AuditEntity.relatedId("fromAccount").eq(accountId),
+                        AuditEntity.relatedId("toAccount").eq(accountId)
+                ))
                 .addOrder(AuditEntity.revisionNumber().desc())
                 .setFirstResult(page * size)
                 .setMaxResults(size)
@@ -68,27 +74,14 @@ public class CardAccountAuditService {
 
         for (int i = 0; i < results.size(); i++) {
             Object[] row = results.get(i);
-            CardAccount currentAcc = (CardAccount) row[0];
+            Transfer transfer = (Transfer) row[0];
             CustomRevisionEntity rev = (CustomRevisionEntity) row[1];
 
-            BigDecimal currentBalance = currentAcc.getBalance();
-            BigDecimal diff = BigDecimal.ZERO;
-            String type = "Инициализация";
-
-            if (i + 1 < results.size()) {
-                CardAccount previousAcc = (CardAccount) results.get(i + 1)[0];
-                diff = currentBalance.subtract(previousAcc.getBalance());
-                type = diff.compareTo(BigDecimal.ZERO) > 0 ? "ПОПОЛНЕНИЕ" : "СПИСАНИЕ";
-            } else if (page * size + i > 0) {
-                type = "ИЗМЕНЕНИЕ (архив)";
-            }
-
             history.add(new BalanceHistoryDto(
-                    currentBalance,
-                    diff.abs(),
-                    type,
+                    transfer.getAmount().multiply(BigDecimal.valueOf(transfer.getFromAccount().getId().equals(accountId) ? -1 : 1)),
                     LocalDateTime.ofInstant(Instant.ofEpochMilli(rev.getTimestamp()), ZoneId.systemDefault()),
-                    rev.getUsername()
+                    rev.getUsername(),
+                    transfer.getStatus()
             ));
         }
 

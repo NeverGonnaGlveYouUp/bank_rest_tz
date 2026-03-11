@@ -42,11 +42,14 @@ public class AdminCardService implements CardServiceInterface {
         card.setCardNumber(cardNumberGenerator.generate());
         card.setCardName("Карта " + cardOwner.getUsername());
         card.setExpiryDate(createCardDto.getExpiryDate());
+
         card = cardRepository.save(card);
 
         CardAccount cardAccount = new CardAccount();
         cardAccount.setCard(card);
         cardAccountRepository.save(cardAccount);
+
+        card.setCardAccount(cardAccount);
 
         return card.toCardDto();
     }
