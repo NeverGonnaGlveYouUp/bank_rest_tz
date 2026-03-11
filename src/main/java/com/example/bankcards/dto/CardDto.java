@@ -4,6 +4,7 @@ import com.example.bankcards.entity.Card;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Data
@@ -14,4 +15,5 @@ public class CardDto {
     private String cardName;
     private LocalDate expiryDate;
     private Card.CardStatus status;
+    private BigDecimal balance;
 }

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+    <include file="db/migration/changes/001-add-pgcrypto-extension.xml"/>
+    <include file="db/migration/changes/002-create-tables.xml"/>
+    <include file="db/migration/changes/003-create-constraints.xml"/>
+    <include file="db/migration/changes/004-create-aud-tables.xml"/>
+    <include file="db/migration/changes/005-create-aud-constraints.xml"/>
+    <include file="db/migration/changes/010-modify-tables.xml"/>
+    <include file="db/migration/changes/020-insert-roles.xml"/>
+
+</databaseChangeLog>

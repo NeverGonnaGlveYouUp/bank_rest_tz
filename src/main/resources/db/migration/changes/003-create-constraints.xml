@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="addUniqueConstraint__UC_ROLES_NAME" author="Ryzen">
+        <addUniqueConstraint columnNames="name" constraintName="UC_ROLES_NAME" tableName="roles"/>
+    </changeSet>
+
+    <changeSet id="addUniqueConstraint__UC_USERS_USERNAME" author="Ryzen">
+        <addUniqueConstraint columnNames="username" constraintName="UC_USERS_USERNAME" tableName="users"/>
+    </changeSet>
+
+    <changeSet id="addForeignKeyConstraint__FK_CARDS_ON_USER" author="Ryzen">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="cards" constraintName="FK_CARDS_ON_USER"
+                                 referencedColumnNames="id" referencedTableName="users"/>
+    </changeSet>
+
+    <changeSet id="addPrimaryKey__PK_USERS_ROLES" author="Ryzen">
+        <addPrimaryKey columnNames="role_id, user_id" constraintName="pk_users_roles" tableName="users_roles"/>
+    </changeSet>
+
+    <changeSet id="addForeignKeyConstraint__FK_USEROL_ON_ROLE" author="Ryzen">
+        <addForeignKeyConstraint baseColumnNames="role_id" baseTableName="users_roles"
+                                 constraintName="FK_USEROL_ON_ROLE" referencedColumnNames="id"
+                                 referencedTableName="roles"/>
+    </changeSet>
+
+    <changeSet id="addForeignKeyConstraint__FK_USEROL_ON_USER" author="Ryzen">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="users_roles"
+                                 constraintName="FK_USEROL_ON_USER" referencedColumnNames="id"
+                                 referencedTableName="users"/>
+    </changeSet>
+
+
+    <changeSet id="addForeignKeyConstraint__FK_TRANSFER_ON_FROM_ACCOUNT" author="Ryzen">
+        <addForeignKeyConstraint baseColumnNames="from_account_id" baseTableName="transfer"
+                                 constraintName="FK_TRANSFER_ON_FROM_ACCOUNT" referencedColumnNames="id"
+                                 referencedTableName="card_account"/>
+    </changeSet>
+
+    <changeSet id="addForeignKeyConstraint__FK_TRANSFER_ON_TO_ACCOUNT" author="Ryzen">
+        <addForeignKeyConstraint baseColumnNames="to_account_id" baseTableName="transfer"
+                                 constraintName="FK_TRANSFER_ON_TO_ACCOUNT" referencedColumnNames="id"
+                                 referencedTableName="card_account"/>
+    </changeSet>
+
+
+</databaseChangeLog>

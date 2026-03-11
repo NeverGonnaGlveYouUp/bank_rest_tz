@@ -62,6 +62,20 @@ public class Card {
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted = false;
 
+    public CardDto toCardDtoWithBalance() {
+        if (maskedNumber == null) {
+            maskCardNumber();
+        }
+        return new CardDto(
+                id,
+                maskedNumber,
+                cardName,
+                expiryDate,
+                status,
+                cardAccount.getBalance()
+        );
+    }
+
     public CardDto toCardDto() {
         if (maskedNumber == null) {
             maskCardNumber();
@@ -71,7 +85,8 @@ public class Card {
                 maskedNumber,
                 cardName,
                 expiryDate,
-                status
+                status,
+                null
         );
     }
 

@@ -7,6 +7,7 @@ import com.example.bankcards.service.AdminCardService;
 import com.example.bankcards.util.ObjectToRsqlConverter;
 import com.example.bankcards.validators.CardValidator;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
@@ -122,9 +123,34 @@ public class AdminCardController {
      * @return сообщение об успешном завершении операции
      */
     @PostMapping("/transfers/{id}/rollback")
-    public ResponseEntity<String> rollbackTransfer(@PathVariable Long id) {
+    public ResponseEntity<String> rollbackTransfer(
+            @PathVariable Long id
+    ) {
         adminCardService.rollbackTransfer(id);
         return ResponseEntity.ok("Перевод успешно отменен, балансы восстановлены.");
+    }
+
+    /**
+     * Удаление карты (мягкое удаление).
+     * @param id ID карты
+     */
+    @Operation(
+            summary = "Удалить карту",
+            description = "Выполняет мягкое удаление карты. Карта перестает отображаться в списках, но сохраняется в базе данных."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Карта успешно удалена"),
+            @ApiResponse(responseCode = "404", description = "Карта не найдена")
+    })
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(
+            @Parameter(description = "ID карты") @PathVariable Long id
+    ) {
+        String adminUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+        log.info("Administrator [{}] requested deletion of card ID: {}", adminUsername, id);
+
+        adminCardService.deleteCard(id);
+        return ResponseEntity.noContent().build();
     }
 
 }

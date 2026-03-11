@@ -109,4 +109,15 @@ public class AdminCardService implements CardServiceInterface {
 
         log.info("The admin has cancelled the transfer ID: {}. Balances have been restored.", transferId);
     }
+
+    /**
+     * Мягкое удаление карты.
+     * @param id идентификатор карты
+     */
+    @Transactional
+    public void deleteCard(Long id) {
+        Card card = cardRepository.findById(id).orElseThrow();
+        cardRepository.delete(card);
+        log.info("The card with ID {} has been marked as deleted.", id);
+    }
 }

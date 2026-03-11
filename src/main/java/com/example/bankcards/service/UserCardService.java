@@ -46,7 +46,7 @@ public class UserCardService implements CardServiceInterface {
         Specification<Card> searchSpecificationSorted = searchSpecification.and(toSort(sort));
         return cardFilterRepository
                 .findAll(searchSpecificationSorted, PageRequest.of(page, size))
-                .map(Card::toCardDto);
+                .map(Card::toCardDtoWithBalance);
     }
 
     @Override
@@ -124,6 +124,8 @@ public class UserCardService implements CardServiceInterface {
         }
 
         transfer.setStatus(Transfer.TransferStatus.REQUEST_FOR_ROLLBACK);
+
+        transferRepository.save(transfer);
 
     }
 

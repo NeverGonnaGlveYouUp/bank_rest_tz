@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="addColumn__cards__card_acciount_id" author="Ryzen">
+        <addColumn tableName="cards">
+            <column name="card_acciount_id" type="BIGINT"/>
+        </addColumn>
+    </changeSet>
+    <changeSet id="addForeignKeyConstraint__FK_CARDS_ON_CARD_ACCIOUNT" author="Ryzen">
+        <addForeignKeyConstraint baseColumnNames="card_acciount_id" baseTableName="cards"
+                                 constraintName="FK_CARDS_ON_CARD_ACCIOUNT" referencedColumnNames="id"
+                                 referencedTableName="card_account"/>
+    </changeSet>
+
+    <changeSet id="dropColumn__cards__balance" author="Ryzen">
+        <dropColumn columnName="balance" tableName="cards"/>
+    </changeSet>
+
+    <changeSet id="dropColumn__cards__card_number" author="Ryzen">
+        <dropColumn columnName="card_number" tableName="cards"/>
+    </changeSet>
+
+    <changeSet id="addColumn__cards__card_number" author="Ryzen">
+        <addColumn tableName="cards">
+            <column name="card_number" type="bytea">
+                <constraints nullable="false" validateNullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>
