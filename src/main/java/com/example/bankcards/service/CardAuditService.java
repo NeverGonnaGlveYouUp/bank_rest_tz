@@ -72,8 +72,7 @@ public class CardAuditService {
 
         List<BalanceHistoryDto> history = new ArrayList<>();
 
-        for (int i = 0; i < results.size(); i++) {
-            Object[] row = results.get(i);
+        for (Object[] row : results) {
             Transfer transfer = (Transfer) row[0];
             CustomRevisionEntity rev = (CustomRevisionEntity) row[1];
 

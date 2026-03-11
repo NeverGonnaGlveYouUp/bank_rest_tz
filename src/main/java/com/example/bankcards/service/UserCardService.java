@@ -91,7 +91,7 @@ public class UserCardService implements CardServiceInterface {
         CardAccount fromAcc = fromCard.getCardAccount();
         CardAccount toAcc = dreamingCard.getCardAccount();
 
-        if (fromAcc.getBalance().compareTo(amount) < 0) throw new IllegalStateException("Недостаточно средств");
+        if (fromAcc.getBalance().compareTo(amount) < 0) throw new AccessDeniedException("Недостаточно средств");
 
         fromAcc.setBalance(fromAcc.getBalance().subtract(amount));
         toAcc.setBalance(toAcc.getBalance().add(amount));

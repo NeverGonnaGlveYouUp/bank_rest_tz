@@ -6,6 +6,9 @@ import com.example.bankcards.dto.UpdateCardRequest;
 import com.example.bankcards.service.AdminCardService;
 import com.example.bankcards.util.ObjectToRsqlConverter;
 import com.example.bankcards.validators.CardValidator;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +23,10 @@ import org.springframework.web.util.UriUtils;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 
+/**
+ * Контроллер для управления банковскими картами через панель администратора.
+ * Позволяет создавать карты, искать их по фильтрам и управлять транзакциями.
+ */
 @Slf4j
 @RestController
 @PreAuthorize("hasRole('ADMIN')")
@@ -30,6 +37,18 @@ public class AdminCardController {
     private final CardValidator cardValidator;
     private final AdminCardService adminCardService;
 
+    /**
+     * Создает новую банковскую карту для пользователя.
+     *
+     * @param createCardDto данные для создания карты
+     * @return {@link ResponseEntity} с созданной картой или списком ошибок валидации
+     */
+    @Operation(summary = "Создать новую карту", description = "Создает карту для указанного пользователя с предварительной валидацией.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Карта успешно создана"),
+            @ApiResponse(responseCode = "400", description = "Ошибка валидации входных данных"),
+            @ApiResponse(responseCode = "403", description = "Недостаточно прав доступа")
+    })
     @PostMapping("/create")
     public ResponseEntity<?> create(
             CreateCardDto createCardDto
@@ -55,6 +74,16 @@ public class AdminCardController {
         return ResponseEntity.created(location).body(cardDto);
     }
 
+    /**
+     * Поиск карт с использованием RSQL фильтрации.
+     *
+     * @param search RSQL строка фильтрации (например, "status=='ACTIVE';cardAccount.balance>300.00")
+     * @param sort   параметры сортировки
+     * @param page   номер страницы
+     * @param size   размер страницы
+     * @return список найденных карт
+     */
+    @Operation(summary = "Поиск карт по RSQL", description = "Гибкий поиск карт с использованием синтаксиса RSQL.")
     @GetMapping("/findAllByRsql")
     public ResponseEntity<?> findAllByRsql(
             @RequestParam(value = "search", required = false) String search,
@@ -70,19 +99,27 @@ public class AdminCardController {
     }
 
     /**
-     * Изменение параметров карты (имя, любой статус).
+     * Частичное обновление данных карты.
+     *
+     * @param id      ID карты
+     * @param request объект с обновляемыми полями (имя, статус)
+     * @return обновленная карта
      */
+    @Operation(summary = "Обновить параметры карты", description = "Изменение имени карты или статуса карты.")
     @PatchMapping("/{id}")
     public ResponseEntity<CardDto> updateCard(
             @PathVariable Long id,
-            @RequestBody UpdateCardRequest request) {
-
+            @RequestBody UpdateCardRequest request
+    ) {
         CardDto updatedCard = adminCardService.updateCard(id, request);
         return ResponseEntity.ok(updatedCard);
     }
 
     /**
-     * Подтверждение отката перевода (изменение балансов).
+     * Откат перевода между картами. Восстанавливает балансы участников транзакции.
+     *
+     * @param id ID транзакции (перевода) для отката
+     * @return сообщение об успешном завершении операции
      */
     @PostMapping("/transfers/{id}/rollback")
     public ResponseEntity<String> rollbackTransfer(@PathVariable Long id) {

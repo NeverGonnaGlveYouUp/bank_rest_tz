@@ -1,12 +1,14 @@
 package com.example.bankcards.security;
 
 import io.jsonwebtoken.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
 
+@Slf4j
 @Component
 public class JwtService {
 
@@ -30,15 +32,15 @@ public class JwtService {
             Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
             return true;
         } catch (SignatureException e) {
-            System.err.println("Неверная подпись токена: " + e.getMessage());
+            log.info("Неверная подпись токена: {}", e.getMessage());
         } catch (MalformedJwtException e) {
-            System.err.println("Некорректный токен: " + e.getMessage());
+            log.info("Некорректный токен: {}", e.getMessage());
         } catch (ExpiredJwtException e) {
-            System.err.println("Токен просрочен: " + e.getMessage());
+            log.info("Токен просрочен: {}", e.getMessage());
         } catch (UnsupportedJwtException e) {
-            System.err.println("Неподдерживаемый токен: " + e.getMessage());
+            log.info("Неподдерживаемый токен: {}", e.getMessage());
         } catch (IllegalArgumentException e) {
-            System.err.println("Пустой токен: " + e.getMessage());
+            log.info("Пустой токен: {}", e.getMessage());
         }
         return false;
     }
