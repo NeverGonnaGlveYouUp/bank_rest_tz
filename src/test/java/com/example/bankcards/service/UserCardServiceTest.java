@@ -6,10 +6,7 @@ import com.example.bankcards.entity.Card;
 import com.example.bankcards.entity.CardAccount;
 import com.example.bankcards.entity.Transfer;
 import com.example.bankcards.entity.User;
-import com.example.bankcards.repository.CardFilterRepository;
-import com.example.bankcards.repository.CardRepository;
-import com.example.bankcards.repository.TransferRepository;
-import com.example.bankcards.repository.UserRepository;
+import com.example.bankcards.repository.*;
 import com.example.bankcards.service.util.Tools;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -76,6 +73,10 @@ class UserCardServiceTest {
         user.setId(userId);
         user.setUsername(username);
 
+        CardAccount cardAccount = new CardAccount();
+        cardAccount.setId(1L);
+        cardAccount.setBalance(new BigDecimal("1000.00"));
+
         Card card = new Card();
         card.setId(1L);
         card.setCardName("testCard");
@@ -83,6 +84,7 @@ class UserCardServiceTest {
         card.setExpiryDate(LocalDate.now().plusYears(2));
         card.setStatus(Card.CardStatus.ACTIVE);
         card.setUser(user);
+        card.setCardAccount(cardAccount);
 
         Page<Card> cardPage = new PageImpl<>(List.of(card));
 

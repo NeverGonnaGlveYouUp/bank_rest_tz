@@ -1,2 +1,4 @@
 /docker/db/data/
 amplicode.xml
+.idea/
+target/

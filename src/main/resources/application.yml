@@ -20,7 +20,7 @@ spring:
     show-sql: false
     defer-datasource-initialization: false
     hibernate:
-      ddl-auto: create
+      ddl-auto: validate
 
   liquibase:
     change-log: classpath:/db/migration/db.changelog-master.xml

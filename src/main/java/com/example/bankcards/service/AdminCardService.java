@@ -18,6 +18,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+
 import static io.github.perplexhub.rsql.RSQLJPASupport.toSort;
 import static io.github.perplexhub.rsql.RSQLJPASupport.toSpecification;
 
@@ -46,6 +48,7 @@ public class AdminCardService implements CardServiceInterface {
         card = cardRepository.save(card);
 
         CardAccount cardAccount = new CardAccount();
+        cardAccount.setBalance(new BigDecimal("10000.00"));
         cardAccount.setCard(card);
         cardAccountRepository.save(cardAccount);
 
@@ -61,6 +64,9 @@ public class AdminCardService implements CardServiceInterface {
             Integer page,
             Integer size
     ) {
+        if (search != null && search.contains("cardAccount")) {
+            throw new IllegalArgumentException("Поиск по данным счета запрещен");
+        }
         Specification<Card> searchSpecification = toSpecification(search);
         Specification<Card> searchSpecificationSorted = searchSpecification.and(toSort(sort));
         return cardFilterRepository

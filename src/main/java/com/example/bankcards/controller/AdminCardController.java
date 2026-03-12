@@ -87,15 +87,19 @@ public class AdminCardController {
     @Operation(summary = "Поиск карт по RSQL", description = "Гибкий поиск карт с использованием синтаксиса RSQL.")
     @GetMapping("/findAllByRsql")
     public ResponseEntity<?> findAllByRsql(
+            @Parameter(description = "RSQL запрос для фильтрации (URL-encoded)")
             @RequestParam(value = "search", required = false) String search,
+            @Parameter(description = "Сортировка в формате: field,asc|desc")
             @RequestParam(value = "sort", required = false) String sort,
+            @Parameter(description = "Номер страницы")
             @RequestParam(value = "page", defaultValue = "0") Integer page,
+            @Parameter(description = "Размер страницы")
             @RequestParam(value = "size", defaultValue = "10") Integer size
     ) {
         String adminUsername = SecurityContextHolder.getContext().getAuthentication().getName();
         log.info("findAllByRsql: user: {} search:{}, sort:{}, page:{}, size:{}",
                 adminUsername, search, sort, page, size);
-        search = UriUtils.decode(search, StandardCharsets.UTF_8);
+        if (search != null) search = UriUtils.decode(search, StandardCharsets.UTF_8);;
         return ResponseEntity.ok(adminCardService.findAllByRsql(search, sort, page, size));
     }
 
@@ -123,11 +127,11 @@ public class AdminCardController {
      * @return сообщение об успешном завершении операции
      */
     @PostMapping("/transfers/{id}/rollback")
-    public ResponseEntity<String> rollbackTransfer(
+    public ResponseEntity<?> rollbackTransfer(
             @PathVariable Long id
     ) {
         adminCardService.rollbackTransfer(id);
-        return ResponseEntity.ok("Перевод успешно отменен, балансы восстановлены.");
+        return ResponseEntity.ok(java.util.Map.of("message", "Перевод успешно отменен, балансы восстановлены."));
     }
 
     /**

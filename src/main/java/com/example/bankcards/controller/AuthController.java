@@ -3,11 +3,13 @@ package com.example.bankcards.controller;
 import com.example.bankcards.dto.JwtResponse;
 import com.example.bankcards.dto.LoginRequest;
 import com.example.bankcards.dto.RegisterRequest;
+import com.example.bankcards.dto.UserProfileDto;
 import com.example.bankcards.entity.Role;
 import com.example.bankcards.entity.User;
 import com.example.bankcards.repository.RoleRepository;
 import com.example.bankcards.repository.UserRepository;
 import com.example.bankcards.security.JwtService;
+import com.example.bankcards.service.UserService;
 import com.example.bankcards.validators.AuthDetailsValidator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -17,6 +19,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -46,6 +49,7 @@ public class AuthController {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthDetailsValidator authDetailsValidator;
+    private final UserService userService;
 
     /**
      * Аутентификация пользователя и выдача JWT токена.
@@ -118,6 +122,24 @@ public class AuthController {
 
         log.info("User {} successfully created with roles: {}", user.getUsername(), request.getRoles());
         return ResponseEntity.ok("Пользователь успешно зарегистрировался!");
+    }
+
+    /**
+     * Получение полного профиля пользователя с историей изменений.
+     */
+    @Operation(
+            summary = "Профиль пользователя и аудит",
+            description = "Возвращает текущие данные пользователя и историю всех правок (кто, когда и что менял)."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Профиль успешно получен"),
+            @ApiResponse(responseCode = "404", description = "Пользователь не найден")
+    })
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @GetMapping("/user/profile")
+    public ResponseEntity<UserProfileDto> getUserProfile() {
+        log.info("User requested profile and audit history");
+        return ResponseEntity.ok(userService.getUserProfileWithHistory());
     }
 
 }

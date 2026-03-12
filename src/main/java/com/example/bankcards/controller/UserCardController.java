@@ -2,6 +2,7 @@ package com.example.bankcards.controller;
 
 import com.example.bankcards.service.UserCardService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
@@ -40,9 +41,13 @@ public class UserCardController {
     @Operation(summary = "Получить свои карты", description = "Возвращает список карт текущего пользователя с возможностью фильтрации и пагинации.")
     @GetMapping("/findAllByRsql")
     public ResponseEntity<?> findAllByRsql(
+            @Parameter(description = "RSQL запрос для фильтрации (URL-encoded)")
             @RequestParam(value = "search", required = false) String search,
+            @Parameter(description = "Сортировка в формате: field,asc|desc")
             @RequestParam(value = "sort", required = false) String sort,
+            @Parameter(description = "Номер страницы")
             @RequestParam(value = "page", defaultValue = "0") Integer page,
+            @Parameter(description = "Размер страницы")
             @RequestParam(value = "size", defaultValue = "10") Integer size
     ) {
         String adminUsername = SecurityContextHolder.getContext().getAuthentication().getName();

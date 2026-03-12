@@ -9,7 +9,6 @@ import com.example.bankcards.entity.Transfer;
 import com.example.bankcards.entity.User;
 import com.example.bankcards.repository.*;
 import com.example.bankcards.util.CardNumberGenerator;
-import jakarta.persistence.EntityNotFoundException;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -29,7 +28,6 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 /**
