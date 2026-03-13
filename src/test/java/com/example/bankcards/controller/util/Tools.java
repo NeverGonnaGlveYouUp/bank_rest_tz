@@ -59,4 +59,22 @@ public class Tools {
                 .compact();
     }
 
+    /**
+     * Добывает логин пользователя из тестового jwt токена
+     *
+     * @param token - токен
+     * @return логин
+     */
+    public String getUsernameFromTestToken(String token) {
+
+        byte[] keyBytes = jwtSecret.getBytes();
+        var key = Keys.hmacShaKeyFor(keyBytes);
+
+        return Jwts.parser()
+                .setSigningKey(key)
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
+    }
+
 }

@@ -121,13 +121,27 @@ public class AdminCardController {
     }
 
     /**
-     * Откат перевода между картами. Восстанавливает балансы участников транзакции.
+     * Откат перевода между картами.
+     * Аннулирует операцию перевода и возвращает средства на карту отправителя,
+     * списывая их с карты получателя.
      *
-     * @param id ID транзакции (перевода) для отката
-     * @return сообщение об успешном завершении операции
+     * @param id Уникальный идентификатор транзакции для отмены
+     * @return Ответ с подтверждением успешного отката
      */
+    @Operation(
+            summary = "Откат перевода (Rollback)",
+            description = "Позволяет администратору отменить транзакцию перевода. " +
+                    "Баланс отправителя будет увеличен, а баланс получателя уменьшен на сумму операции."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Перевод успешно отменен, балансы восстановлены"),
+            @ApiResponse(responseCode = "404", description = "Транзакция с указанным ID не найдена"),
+            @ApiResponse(responseCode = "400", description = "Невозможно выполнить откат (например, недостаточно средств у получателя)"),
+            @ApiResponse(responseCode = "403", description = "Доступ запрещен: требуется роль ADMIN")
+    })
     @PostMapping("/transfers/{id}/rollback")
     public ResponseEntity<?> rollbackTransfer(
+            @Parameter(description = "ID транзакции для отката")
             @PathVariable Long id
     ) {
         adminCardService.rollbackTransfer(id);

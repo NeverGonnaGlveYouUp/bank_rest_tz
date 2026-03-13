@@ -9,6 +9,7 @@ import com.example.bankcards.repository.RoleRepository;
 import com.example.bankcards.repository.UserRepository;
 import com.example.bankcards.security.JwtService;
 import com.example.bankcards.security.UserDetailsServiceImpl;
+import com.example.bankcards.service.UserService;
 import com.example.bankcards.validators.AuthDetailsValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -33,7 +34,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
- * Тест контроллера AuthController (Используется @WebMvcTest)
+ * Тест контроллера AuthController
  */
 @WebMvcTest(AuthController.class)
 @Import(SecurityConfig.class)
@@ -62,6 +63,9 @@ class AuthControllerTest {
 
     @MockBean
     private UserDetailsServiceImpl userDetailsService;
+
+    @MockBean
+    private UserService userService;
 
     @BeforeEach
     void setUp() {
