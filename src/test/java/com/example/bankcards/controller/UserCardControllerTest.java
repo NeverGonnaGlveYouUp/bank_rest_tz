@@ -239,7 +239,7 @@ class UserCardControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string("Перевод успешно выполнен"));
 
-        verify(userCardService, times(1)).transferMoney(fromId, toId, amount);
+        verify(userCardService, only()).transferMoney(fromId, toId, amount);
     }
 
     @Test

@@ -5,7 +5,9 @@ import com.example.bankcards.entity.Card;
 import com.example.bankcards.entity.Role;
 import com.example.bankcards.entity.User;
 import com.example.bankcards.repository.CardRepository;
+import com.example.bankcards.repository.RoleRepository;
 import com.example.bankcards.repository.UserFilterRepository;
+import com.example.bankcards.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,13 +34,24 @@ class AdminUserServiceTest {
     private UserFilterRepository cardFilterRepository;
 
     @Mock
+    private UserRepository userRepository;
+
+    @Mock
+    private RoleRepository roleRepository;
+
+    @Mock
     private CardRepository cardRepository;
 
     private AdminUserService adminUserService;
 
     @BeforeEach
     void setUp() {
-        adminUserService = new AdminUserService(cardFilterRepository, cardRepository);
+        adminUserService = new AdminUserService(
+                cardFilterRepository,
+                cardRepository,
+                userRepository,
+                roleRepository
+        );
     }
 
     @Test

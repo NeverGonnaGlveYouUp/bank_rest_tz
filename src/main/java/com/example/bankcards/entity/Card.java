@@ -11,7 +11,6 @@ import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.envers.AuditJoinTable;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
 
@@ -21,7 +20,6 @@ import java.time.LocalDate;
 @Entity
 @Audited
 @Table(name = "cards")
-@EntityListeners(AuditingEntityListener.class)
 @SQLDelete(sql = "UPDATE cards SET is_deleted = true WHERE id = ?")
 @SQLRestriction("is_deleted = false")
 public class Card {

@@ -1,6 +1,8 @@
 package com.example.bankcards.controller;
 
+import com.example.bankcards.dto.UpdateUserAdminRequest;
 import com.example.bankcards.service.AdminUserService;
+import com.example.bankcards.validators.AdminUserValidator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -11,10 +13,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.Errors;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriUtils;
 
 import java.nio.charset.StandardCharsets;
@@ -32,6 +33,7 @@ import java.nio.charset.StandardCharsets;
 public class AdminUserController {
 
     private final AdminUserService adminUserService;
+    private final AdminUserValidator adminUserValidator;
 
     /**
      * Поиск пользователей в системе с использованием гибких RSQL фильтров.
@@ -67,6 +69,45 @@ public class AdminUserController {
                 adminUsername, search, sort, page, size);
         if (search != null) search = UriUtils.decode(search, StandardCharsets.UTF_8);
         return ResponseEntity.ok(adminUserService.findAllByRsql(search, sort, page, size));
+    }
+
+    /**
+     * Обновление данных пользователя администратором.
+     * Позволяет изменить имя пользователя и/или его роли.
+     *
+     * @param id      ID пользователя, данные которого нужно изменить
+     * @param request объект с новым именем и списком ролей
+     * @return подтверждение обновления
+     */
+    @Operation(
+            summary = "Обновление данных пользователя",
+            description = "Позволяет сменить username и назначить новый список ролей. " +
+                    "Если поле не передано в JSON, оно не будет обновлено."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Данные пользователя успешно обновлены"),
+            @ApiResponse(responseCode = "404", description = "Пользователь не найден"),
+            @ApiResponse(responseCode = "400", description = "Некорректные данные или роль не существует")
+    })
+    @PatchMapping("/{id}/details")
+    public ResponseEntity<?> updateUser(
+            @PathVariable Long id,
+            @RequestBody UpdateUserAdminRequest request
+    ) {
+        String adminUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+        log.info("updateUser: admin: {} target_id: {}, newUsername: {}, roles: {}",
+                adminUsername, id, request.getNewUsername(), request.getRoles());
+
+        Errors errors = new BeanPropertyBindingResult(request, "request");
+        adminUserValidator.validate(request, errors);
+        if (errors.hasErrors()) return ResponseEntity.badRequest().body(errors.getAllErrors());
+
+        adminUserService.updateUserByAdmin(id, request);
+
+        return ResponseEntity.ok(java.util.Map.of(
+                "message", "Данные пользователя успешно обновлены",
+                "userId", id
+        ));
     }
 
 }

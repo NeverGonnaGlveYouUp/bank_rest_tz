@@ -10,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriUtils;
 
@@ -74,7 +76,8 @@ public class UserCardController {
     public ResponseEntity<String> transferMoney(
             @RequestParam Long fromId,
             @RequestParam Long toId,
-            @RequestParam BigDecimal amount) {
+            @RequestParam BigDecimal amount
+    ) {
 
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         log.info("Пользователь {} инициировал перевод {} с карты {} на карту {}", username, amount, fromId, toId);
@@ -95,9 +98,11 @@ public class UserCardController {
             @ApiResponse(responseCode = "404", description = "Перевод с таким ID не найден")
     })
     @PostMapping("/transfers/{id}/request-rollback")
-    public ResponseEntity<String> requestRollback(@PathVariable Long id) {
+    public ResponseEntity<String> requestRollback(
+            @PathVariable Long id
+    ) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        log.info("Пользователь {} запросил отмену перевода ID: {}", username, id);
+        log.info("User {} requested to cancel transfer ID: {}", username, id);
 
         userCardService.rollbackTransfer(id);
         return ResponseEntity.ok("Запрос на отмену перевода успешно создан и ожидает проверки администратором");
